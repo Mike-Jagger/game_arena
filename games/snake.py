@@ -41,3 +41,41 @@ class SnakeGame:
         self.food = Point(x, y)
         if self.food in self.snake:
             self._place_food()
+
+    def step(self, action):
+        """Actions: [staright, right, left] (one-hot or 0, 1, 2)"""
+        self.frame_iteration += 1
+
+        # Determine the new direction
+        clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
+        idx = clock_wise.index(self.direction)
+
+        if action == 0:
+            new_dir = clock_wise[idx]  # no change, continue straight
+        elif action == 1:
+            new_dir = clock_wise[(idx + 1) % 4]  # right turn
+        else:
+            new_dir = clock_wise[(idx - 1) % 4]  # left turn
+
+        self.direction = new_dir
+        self._move(self.direction)
+        self.snake.insert(0, self.head)
+
+        reward = 0 
+        game_over = False
+
+        # Check if collision with wall or self, or timeout
+        if self._is_collision() or self.frame_iteration > 100 * len(self.snake):
+            game_over = True
+            reward = -10
+            return self.get_state(), reward, game_over, self.score
+
+        # Check if food is eaten
+        if self.head == self.food:
+            self.score += 1
+            reward = 10
+            self._place_food()
+        else:
+            self.snake.pop()
+
+        return self.get_state(), reward, game_over, self.score
