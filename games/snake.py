@@ -153,3 +153,14 @@ class SnakeGame:
         ]
 
         return np.array(state, dtype=int)
+
+    def render_to_surface(self, surface):
+        """Renders game frame directly onto a provided pygame.Surface."""
+
+        surface.fill((20, 20, 25))
+        for pt in self.snake:
+            pygame.draw.rect(surface, (0, 200, 80), pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
+            pygame.draw.rect(surface, (0, 150, 60), pygame.Rect(pt.x+2, pt.y+2, BLOCK_SIZE-4, BLOCK_SIZE-4))
+
+        # Draw Food
+        pygame.draw.rect(surface, (230, 50, 50), pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
