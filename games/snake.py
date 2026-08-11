@@ -107,3 +107,49 @@ class SnakeGame:
             y -= BLOCK_SIZE
 
         self.head = Point(x, y)
+
+    def get_state(self):
+        head = self.snake[0]
+        point_l = Point(head.x - BLOCK_SIZE, head.y)
+        point_r = Point(head.x + BLOCK_SIZE, head.y)
+        point_u = Point(head.x, head.y - BLOCK_SIZE)
+        point_d = Point(head.x, head.y + BLOCK_SIZE)
+
+        dir_l = self.direction == Direction.LEFT
+        dir_r = self.direction == Direction.RIGHT
+        dir_u = self.direction == Direction.UP
+        dir_d = self.direction == Direction.DOWN
+
+        state = [
+            # Danger straight
+            (dir_r and self._is_collision(point_r)) or 
+            (dir_l and self._is_collision(point_l)) or 
+            (dir_u and self._is_collision(point_u)) or 
+            (dir_d and self._is_collision(point_d)),
+
+            # Danger right
+            (dir_u and self._is_collision(point_r)) or 
+            (dir_d and self._is_collision(point_l)) or 
+            (dir_l and self._is_collision(point_u)) or 
+            (dir_r and self._is_collision(point_d)),
+
+            # Danger left
+            (dir_d and self._is_collision(point_r)) or 
+            (dir_u and self._is_collision(point_l)) or 
+            (dir_r and self._is_collision(point_u)) or 
+            (dir_l and self._is_collision(point_d)),
+
+            # Move direction
+            dir_l,
+            dir_r,
+            dir_u,
+            dir_d,
+
+            # Food location
+            self.food.x < head.x,  # food left
+            self.food.x > head.x,  # food right
+            self.food.y < head.y,  # food up
+            self.food.y > head.y  # food down
+        ]
+
+        return np.array(state, dtype=int)
