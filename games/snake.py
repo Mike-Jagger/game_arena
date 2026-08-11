@@ -79,3 +79,15 @@ class SnakeGame:
             self.snake.pop()
 
         return self.get_state(), reward, game_over, self.score
+
+    def _is_collision(self, pt=None):
+        if pt is None:
+            pt = self.head
+        # Check if the snake hits the boundaries
+        if pt.x > self.w - BLOCK_SIZE or pt.x < 0 or pt.y > self.h - BLOCK_SIZE or pt.y < 0:
+            return True
+        # Check if the snake hits itself
+        if pt in self.snake[1:]:
+            return True
+
+        return False
