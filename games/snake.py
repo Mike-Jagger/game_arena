@@ -65,6 +65,8 @@ class SnakeGame:
         game_over = False
 
         # Check if collision with wall or self, or timeout
+        # TODO: number of non successful attempts should be configurable 
+        # (looking at the 100) using CLI inputs
         if self._is_collision() or self.frame_iteration > 100 * len(self.snake):
             game_over = True
             reward = -10
