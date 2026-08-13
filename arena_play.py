@@ -32,3 +32,11 @@ def run_arena(game_type="snake"):
     env_ql = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
     env_dqn = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
     env_neat = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
+        # Load agents
+    agent_ql = QLearningAgent(action_size=3)
+    agent_ql.load("storage/snake_qlearning.pkl")
+    m_ql = load_metrics("snake", "qlearning")
+
+    agent_dqn = DQNAgent(input_dim=11, output_dim=3)
+    agent_dqn.load("storage/snake_dqn.pt")
+    m_dqn = load_metrics("snake", "dqn")
