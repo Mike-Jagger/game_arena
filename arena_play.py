@@ -19,3 +19,16 @@ def load_metrics(game, model_name):
         with open(filepath, 'r') as f:
             return json.load(f)
     return {"final_avg_score": "N/A", "max_score": "N/A"}
+def run_arena(game_type="snake"):
+    pygame.init()
+    pygame.font.init()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Game Arena - Simultaneous Model Comparison")
+    clock = pygame.time.Clock()
+    font = pygame.font.SysFont("monospace", 14)
+    header_font = pygame.font.SysFont("monospace", 16, bold=True)
+
+    # Instantiate separate game environments
+    env_ql = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
+    env_dqn = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
+    env_neat = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
