@@ -53,3 +53,21 @@ def run_arena(game_type="snake"):
     ]
 
     running = True
+        while running:
+        clock.tick(15)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        # Step Q-Learning
+        if not dones[0]:
+            action = agent_ql.get_action(states[0], is_training=False)
+            states[0], _, dones[0], scores[0] = env_ql.step(action)
+            steps[0] += 1
+
+        # Step DQN
+        if not dones[1]:
+            action = agent_dqn.get_action(states[1], is_training=False)
+            states[1], _, dones[1], scores[1] = env_dqn.step(action)
+            steps[1] += 1
