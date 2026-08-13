@@ -40,3 +40,16 @@ def run_arena(game_type="snake"):
     agent_dqn = DQNAgent(input_dim=11, output_dim=3)
     agent_dqn.load("storage/snake_dqn.pt")
     m_dqn = load_metrics("snake", "dqn")
+        # Tracking states
+    states = [env_ql.reset(), env_dqn.reset(), env_neat.reset()]
+    dones = [False, False, False]
+    scores = [0, 0, 0]
+    steps = [0, 0, 0]
+
+    surfaces = [
+        pygame.Surface((VIEW_WIDTH, VIEW_HEIGHT)),
+        pygame.Surface((VIEW_WIDTH, VIEW_HEIGHT)),
+        pygame.Surface((VIEW_WIDTH, VIEW_HEIGHT))
+    ]
+
+    running = True
