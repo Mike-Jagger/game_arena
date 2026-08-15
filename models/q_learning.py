@@ -11,7 +11,14 @@ class QLearningAgent:
         
 
     def get_action(self, state, is_training):
-        pass    
+        state_key = tuple(state) if isinstance(state, (list, np.ndarray)) else state
+        if is_training and random.random() < self.epsilon:
+            return random.randint(0, self.action_size - 1)
+        if state_key not in self.q_table:
+            self.q_table[state_key] = np.zeros(self.action_size)
+        return int(np.argmax(self.q_table[state_key]))
+        
+           
 
     def save(self, filepath):
         pass
