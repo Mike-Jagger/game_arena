@@ -21,6 +21,22 @@ class QLearningAgent:
            
 
     def save(self, filepath):
+        state_key = tuple(state) if isinstance(state, (list, np.ndarray)) else state
+        next_key = tuple(next_state) if isinstance(next_state, (list, np.ndarray)) else next_state
+
+        if state_key not in self.q_table:
+            self.q_table[state_key] = np.zeros(self.action_size)
+        if next_key not in self.q_table:
+            self.q_table[next_key] = np.zeros(self.action_size)
+
+        best_next_q = 0 if done else np.max(self.q_table[next_key])
+        current_q = self.q_table[state_key][action]
+        self.q_table[state_key][action] = current_q + self.lr * (reward + self.gamma * best_next_q - current_q)
+
+        if done and self.epsilon > self.min_epsilon:
+            self.epsilon *= self.epsilon_decay
+
+            
         pass
 
     def load(self, filepath):
