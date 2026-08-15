@@ -21,6 +21,7 @@ class QLearningAgent:
            
 
     def save(self, filepath):
+    def update(self, state, action, reward, next_state, done):
         state_key = tuple(state) if isinstance(state, (list, np.ndarray)) else state
         next_key = tuple(next_state) if isinstance(next_state, (list, np.ndarray)) else next_state
 
@@ -35,10 +36,11 @@ class QLearningAgent:
 
         if done and self.epsilon > self.min_epsilon:
             self.epsilon *= self.epsilon_decay
+            
     def  save(self, filepath)
          with open(filepath, 'wb') as f:
             pickle.dump(self.q_table, f)
-            
+
 
     def load(self, filepath):
          with open(filepath, 'rb') as f:
