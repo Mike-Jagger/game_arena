@@ -15,10 +15,20 @@ class DQNAgent:
       
 
     def get_action(self, state, is_training):
-        pass
+        if is_training and random.random() < self.epsilon:
+            return random.randint(0, self.output_dim - 1)
+        state_t = torch.tensor(state, dtype=torch.float).to(self.device)
+        with torch.no_grad():
+            prediction = self.model(state_t)
+        return int(torch.argmax(prediction).item())
+    
+        
 
     def save(self, filepath):
-        pass
+        torch.save(self.model.state_dict(), filepath)
+        
 
     def load(self, filepath):
-        pass
+        self.model.load_state_dict(torch.load(filepath, map_location=self.device))
+        self.model.eval()
+      
