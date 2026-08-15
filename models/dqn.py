@@ -10,7 +10,9 @@ class DQNAgent:
         x = torch.relu(self.linear1(x))
         x = torch.relu(self.linear2(x))
         return self.linear3(x)
+    
     class DQNAgent:
+        
     def __init__(self, input_dim=11, output_dim=3, lr=0.001, gamma=0.9):
         self.gamma = gamma
         self.output_dim = output_dim
@@ -34,6 +36,9 @@ class DQNAgent:
             prediction = self.model(state_t)
         return int(torch.argmax(prediction).item())
     
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append((state, action, reward, next_state, done))
+
         
 
     def save(self, filepath):
