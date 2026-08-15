@@ -1,6 +1,5 @@
 class QLearningAgent:
-    def __init__(self, action_size=3, lr=0.001, gamma=0.9, epsilon=1.0, epsilon_decay=0.995, min_epsilon=0.01):
-        def _init_(self, action_size=3, lr=0.001, gamma=0.9, epsilon=1.0, epsilon_decay=0.995, min_epsilon=0.01):
+       def _init_(self, action_size=3, lr=0.001, gamma=0.9, epsilon=1.0, epsilon_decay=0.995, min_epsilon=0.01):
         self.action_size = action_size
         self.lr = lr
         self.gamma = gamma
@@ -20,7 +19,7 @@ class QLearningAgent:
         
            
 
-    def save(self, filepath):
+
     def update(self, state, action, reward, next_state, done):
         state_key = tuple(state) if isinstance(state, (list, np.ndarray)) else state
         next_key = tuple(next_state) if isinstance(next_state, (list, np.ndarray)) else next_state
@@ -36,7 +35,7 @@ class QLearningAgent:
 
         if done and self.epsilon > self.min_epsilon:
             self.epsilon *= self.epsilon_decay
-            
+
     def  save(self, filepath)
          with open(filepath, 'wb') as f:
             pickle.dump(self.q_table, f)
