@@ -35,9 +35,10 @@ class QLearningAgent:
 
         if done and self.epsilon > self.min_epsilon:
             self.epsilon *= self.epsilon_decay
-
-            
-        pass
+    def  save(self, filepath)
+         with open(filepath, 'wb') as f:
+            pickle.dump(self.q_table, f)
 
     def load(self, filepath):
-        pass
+         with open(filepath, 'rb') as f:
+            self.q_table = pickle.load(f)
