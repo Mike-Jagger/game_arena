@@ -97,9 +97,7 @@ load(self, filepath)                                                      Deseri
 
 
 
-EditEOD
 
-readme part 3.png
 
 Note: Training methods (like update or remember + train_step) are currently specific to the model type in train.py, but standardization via a train_on_transition(state, action, reward, next_state, done) method is recommended for future extensions.
 
@@ -114,6 +112,18 @@ To add a new game (e.g., Connect-4 or a custom Mario-style level) [cite: 1], fol
 3. Design the State Space: Ensure get_state() returns a flat array or tuple that models can easily ingest.
 
 4. Implement Rendering: The render_to_surface method must scale its drawing based on the width and height parameters so it fits neatly into the multi-viewport arena_play.py screen.
+
+
+Extension Guide: Implementing a New Model
+
+To add a new learning algorithm (e.g., Proximal Policy Optimization - PPO):
+
+1. Create the File: Create a new file in the models/ directory (e.g., models/ppo.py).
+
+2. Define the Agent: Create a class (e.g., PPOAgent) implementing get_action, save, and load.
+
+3. Handle Device Placement: If using PyTorch, ensure the model dynamically handles CPU/GPU placement inside the __init__ and load methods.
+
 
 
 
