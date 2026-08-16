@@ -126,6 +126,31 @@ To add a new learning algorithm (e.g., Proximal Policy Optimization - PPO):
 
 
 
+Integrating Additions into the Architecture
+
+Once your new Game or Model is written, you must expose it to the command-line interfaces.
+
+Step 1: Update train.py
+
+1. Import your new game or model.
+
+2. Add the name to the argparse choices.
+
+
+parser.add_argument('--game', choices=['snake', 'tictactoe', 'connect4'], requis
+
+parser.add_argument('--model', choices=['qlearning', 'don', 'neat', 'ppo'], requ
+
+3. Create a dedicated training loop function (eg, train_connect4_ppo()) that handles the specific memory and optimization steps of your agent, appending metrics to the storage/ directory in JSON format.
+
+Step 2: Update arena_play.py
+
+1 Import your new game or model.
+
+2. If adding a game, add a conditional block to initialize instances of your new game environment.
+
+3. If adding a model, instantiate it, load its saved artifact from storage/, and add it to the execution loop and rendering queue. Ensure you extract the relevant final_avg_score and max score metrics to be displayed on the HUD.
+
 
 
 
