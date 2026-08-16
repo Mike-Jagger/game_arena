@@ -97,6 +97,24 @@ load(self, filepath)                                                      Deseri
 
 
 
+EditEOD
+
+readme part 3.png
+
+Note: Training methods (like update or remember + train_step) are currently specific to the model type in train.py, but standardization via a train_on_transition(state, action, reward, next_state, done) method is recommended for future extensions.
+
+4. Extension Guide: Implementing a New Game
+
+To add a new game (e.g., Connect-4 or a custom Mario-style level) [cite: 1], follow these steps:
+
+1. Create the File: Create a new Python file in the games/directory (e.g., games/connect4.py).
+
+2. Define the Class: Create a class (e.g., Connect4Game) that implements all required methods from the Game Interface.
+
+3. Design the State Space: Ensure get_state() returns a flat array or tuple that models can easily ingest.
+
+4. Implement Rendering: The render_to_surface method must scale its drawing based on the width and height parameters so it fits neatly into the multi-viewport arena_play.py screen.
+
 
 
 
