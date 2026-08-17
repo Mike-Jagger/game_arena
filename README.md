@@ -1,46 +1,77 @@
-﻿game_arena/
-├── README.md   ← THIS ONE
-├── arena_play.py
-├── games/
-├── models/
-└── storage/
 # Game Arena Project
+
+## Project Structure
+
+```text
+game_arena/
+├── README.md
+├── arena_play.py
+├── train.py
+├── games/
+│   ├── base_game.py
+│   ├── snake.py
+│   ├── tictactoe.py
+│   └── connect4.py
+├── models/
+│   ├── qlearning.py
+│   ├── dqn.py
+│   ├── neat.py
+│   └── ppo.py
+├── storage/
+│   └── [saved models and training metrics]
+└── docs/
+    └── [project proposal and supporting documentation]
+```
+
+The project is organized so that the game environments, learning models, and scripts are kept separate.
+
+- `README.md` contains the project documentation and explains how the different parts of the system work.
+- `arena_play.py` runs the Game Arena and brings the games and trained models together for visual comparison.
+- `train.py` handles model training and stores the resulting metrics and model artifacts.
+- `games/` contains the game environments. Each game follows the common game interface so that it can be used by the execution scripts.
+- `models/` contains the AI agents, such as Q-learning, DQN, NEAT, and PPO implementations.
+- `storage/` contains saved model artifacts and training metrics.
+- `docs/` contains the project proposal and other supporting documentation.
+
+The main flow is:
+
+**Game Environment → Model/Agent → Training → Saved Model & Metrics → Game Arena (`arena_play.py`) → Visual Comparison**
+
+---
 
 ## 1. Architecture Overview
 
-The Game Arena is built on a modular, decoupled architecture to ensure that game logic is entirely separate from the machine learning algorithms. This allows for seamless cross-testing (e.g., running the same DQN agent on both Snake and Tic-Tac-Toe).
+The Game Arena is built on a modular, decoupled architecture. The main idea is to keep the game logic separate from the machine learning algorithms. This makes it possible to use different models with different games without having to rewrite the entire system.
 
 The system consists of three primary layers:
 
-1. **Game Environments (`games/`)**: Standardized classes that handle state management, rules, rewards, and rendering.
+1. **Game Environments (`games/`)**: Standardized classes that handle state management, game rules, rewards, and rendering.
 2. **Learning Models (`models/`)**: Standardized agent classes that observe states, select actions, and learn from rewards.
-3. **Execution Scripts (`train.py` & `arena_play.py`)**: The orchestrators that tie environments and models together, handling the training loops, metric storage, and simultaneous Pygame visual rendering.
+3. **Execution Scripts (`train.py` and `arena_play.py`)**: These connect the environments and models. `train.py` handles training, while `arena_play.py` runs the trained agents and displays the games and performance information.
 
-This project is based on the proposal submitted found in the `/docs` section of the project folder. To restate the problem identified:
+This project is based on the proposal found in the `/docs` section of the project folder. The main problem identified in the proposal is that comparing the performance of different AI models can be difficult to communicate to non-technical audiences. Results shown only as tables of numbers do not always make it easy to understand why one model performs better than another.
 
-> Comparing the performance of different AI models (e.g., different reinforcement
-> learning algorithms, or the same algorithm with different
-> hyperparameters/architectures) is often abstract and hard to communicate to non-
-> technical audiences. Benchmarks reported as tables of numbers make it difficult to
-> build intuition for why one model outperforms another.
+The solution is to build a Game Arena where different AI models can play different games while their training, gameplay, and performance can be observed in a more visual and understandable way.
+
+---
 
 ## 2. The Game Environment Interface
 
-To ensure the execution scripts can interact with any game uniformly, all new games must implement a standard interface inspired by OpenAI Gymnasium.
+To allow the execution scripts to work with different games in the same way, every new game must implement a standard interface inspired by OpenAI Gymnasium.
 
 ### Required Game Methods
 
 | Method Signature | Description | Return Value |
 | :--- | :--- | :--- |
-| `__init__(self, width, height)` | Initializes game configuration and visual bounds. | `None` |
-| `reset(self)` | Resets the game to its initial state. | `state` (Tuple or Numpy Array) |
-| `step(self, action)` | Advances the game by one frame/turn based on the agent's action. | `(next_state, reward, done, score_or_info)` |
-| `get_state(self)` | Calculates and returns the current state representation. | `state` (Tuple or Numpy Array) |
-| `render_to_surface(self, surface)` | Draws the current game frame directly onto the provided Pygame surface. | `None` |
+| `__init__(self, width, height)` | Initializes the game configuration and visual bounds. | `None` |
+| `reset(self)` | Resets the game to its initial state. | `state` (Tuple or NumPy Array) |
+| `step(self, action)` | Advances the game by one frame or turn based on the agent's action. | `(next_state, reward, done, score_or_info)` |
+| `get_state(self)` | Calculates and returns the current state representation. | `state` (Tuple or NumPy Array) |
+| `render_to_surface(self, surface)` | Draws the current game frame onto the provided Pygame surface. | `None` |
 
 ### Base Template: `games/base_game.py`
 
-*(Conceptual template for reference)*
+The following is the conceptual base template that shows the structure expected from a game environment:
 
 ```python
 import pygame
@@ -50,112 +81,230 @@ class BaseGame:
         self.width = width
         self.height = height
         self.reset()
-        
+
     def reset(self):
         # Reset internal variables
         return self.get_state()
-        
+
     def step(self, action):
-        # Apply action, calculate reward, check terminal state
-        # return next_state, reward, done, info
+        # Apply action, calculate reward, and check terminal state
+        # Return next_state, reward, done, info
         pass
-        
+
     def get_state(self):
         # Return a numerical representation of the environment
         pass
-        
+
     def render_to_surface(self, surface: pygame.Surface):
         # Draw shapes, sprites, or lines to the given surface
         pass
+```
 
-The creative solution we came up with to solve this problem was to build a game arena that would have different models play different games and present their differencies in a much more educational and tangible manner via seeing metrics on training, gameplay and performance differences between the different games as they play them.
+Each individual game is responsible for implementing these methods according to its own rules. The important part is that the execution scripts can call the same methods regardless of which game is being played.
 
-The following sections will touch much more on the technical spec, however, starting with the project's architecture
+---
 
-## Project Architecture
+## 3. Model Interface
 
-## Future ref
+All AI agents, whether they are tabular methods such as Q-learning, deep learning methods such as DQN, or evolutionary methods such as NEAT, should expose a consistent set of methods.
 
-Rendering Markdown in pygame to describe algorithms and games using readme and letting the game render readme without having reviewer hardcode stuff: https://share.google/aimode/ypUXJbx7uSTyp02rr
+This allows the execution scripts to train the agents and request actions without needing to know the internal details of each model.
 
+### Required Agent Methods
 
-The Model Interface
+| Method Signature | Description |
+| :--- | :--- |
+| `__init__(self, ...)` | Initializes the model's hyperparameters, architecture, and memory where required. |
+| `get_action(self, state, is_training)` | Returns an action. When `is_training=True`, the agent can use exploration such as epsilon-greedy. |
+| `save(self, filepath)` | Saves the model weights or Q-table to the specified location. |
+| `load(self, filepath)` | Loads previously saved model weights or Q-table data. |
 
-All Al agents, whether tabular (Q-learning), deep (DQN), or evolutionary (NEAT), must expose a consistent set of methods to allow the execution scripts to train them and query them for actions.
+Training methods such as `update`, `remember`, or `train_step` can be different for each model because different algorithms learn in different ways.
 
-Required Agent Methods
+For future extensions, a standard method such as the following could be used to make training more consistent:
 
-Method Signature                                                            Description
+```python
+train_on_transition(state, action, reward, next_state, done)
+```
 
-__init__(self, ...)                                                       Initializes hyperparameters, model architecture, and memory.
+---
 
-get actiong self, state, is_training)                                     Returns an action. If is_training=True, incorporates exploration (e.g., epsilon-greedy).
+## 4. Extension Guide: Implementing a New Game
 
-save(self, filepath)                                                      Serializes and saves model weights or Q-tables to disk.
+To add a new game, such as Connect-4 or another custom game, follow these steps.
 
-load(self, filepath)                                                      Deserializes and loads model weights or Q-tables from disk.
+### Step 1: Create the File
 
+Create a new Python file inside the `games/` directory.
 
+For example:
 
+```text
+games/connect4.py
+```
 
+### Step 2: Define the Game Class
 
-Note: Training methods (like update or remember + train_step) are currently specific to the model type in train.py, but standardization via a train_on_transition(state, action, reward, next_state, done) method is recommended for future extensions.
+Create a class for the new game that implements all the required methods from the Game Interface.
 
-4. Extension Guide: Implementing a New Game
+For example:
 
-To add a new game (e.g., Connect-4 or a custom Mario-style level) [cite: 1], follow these steps:
+```python
+class Connect4Game:
+    ...
+```
 
-1. Create the File: Create a new Python file in the games/directory (e.g., games/connect4.py).
+### Step 3: Design the State Space
 
-2. Define the Class: Create a class (e.g., Connect4Game) that implements all required methods from the Game Interface.
+The `get_state()` method should return a flat array or tuple that the learning models can easily process.
 
-3. Design the State Space: Ensure get_state() returns a flat array or tuple that models can easily ingest.
+### Step 4: Implement Rendering
 
-4. Implement Rendering: The render_to_surface method must scale its drawing based on the width and height parameters so it fits neatly into the multi-viewport arena_play.py screen.
+The `render_to_surface()` method should draw the game using the supplied Pygame surface. The rendering should use the provided width and height so that the game fits correctly inside the multi-viewport layout used by `arena_play.py`.
 
+---
 
-Extension Guide: Implementing a New Model
+## 5. Extension Guide: Implementing a New Model
 
-To add a new learning algorithm (e.g., Proximal Policy Optimization - PPO):
+To add a new learning algorithm, such as Proximal Policy Optimization (PPO), follow these steps.
 
-1. Create the File: Create a new file in the models/ directory (e.g., models/ppo.py).
+### Step 1: Create the File
 
-2. Define the Agent: Create a class (e.g., PPOAgent) implementing get_action, save, and load.
+Create a new Python file inside the `models/` directory.
 
-3. Handle Device Placement: If using PyTorch, ensure the model dynamically handles CPU/GPU placement inside the __init__ and load methods.
+For example:
 
+```text
+models/ppo.py
+```
 
+### Step 2: Define the Agent
 
-Integrating Additions into the Architecture
+Create an agent class that implements the required methods, including `get_action`, `save`, and `load`.
 
-Once your new Game or Model is written, you must expose it to the command-line interfaces.
+For example:
 
-Step 1: Update train.py
+```python
+class PPOAgent:
+    ...
+```
 
-1. Import your new game or model.
+### Step 3: Handle Device Placement
 
-2. Add the name to the argparse choices.
+If the model uses PyTorch, the model should handle CPU/GPU placement inside its initialization and loading methods so that it can run on the available device.
 
+---
 
-parser.add_argument('--game', choices=['snake', 'tictactoe', 'connect4'], requis
+## 6. Integrating Additions into the Architecture
 
-parser.add_argument('--model', choices=['qlearning', 'don', 'neat', 'ppo'], requ
+Once a new game or model has been implemented, it must be connected to the command-line interfaces.
 
-3. Create a dedicated training loop function (eg, train_connect4_ppo()) that handles the specific memory and optimization steps of your agent, appending metrics to the storage/ directory in JSON format.
+### Step 1: Update `train.py`
 
-Step 2: Update arena_play.py
+First, import the new game or model.
 
-1 Import your new game or model.
+Then add its name to the appropriate `argparse` choices.
 
-2. If adding a game, add a conditional block to initialize instances of your new game environment.
+For example:
 
-3. If adding a model, instantiate it, load its saved artifact from storage/, and add it to the execution loop and rendering queue. Ensure you extract the relevant final_avg_score and max score metrics to be displayed on the HUD.
+```python
+parser.add_argument(
+    '--game',
+    choices=['snake', 'tictactoe', 'connect4'],
+    required=True
+)
 
+parser.add_argument(
+    '--model',
+    choices=['qlearning', 'dqn', 'neat', 'ppo'],
+    required=True
+)
+```
 
+A dedicated training loop can then be created for combinations that need model-specific training logic.
 
+For example:
 
+```python
+def train_connect4_ppo():
+    ...
+```
 
+The training process should append the relevant metrics to the `storage/` directory in JSON format.
 
+### Step 2: Update `arena_play.py`
 
+Import the new game or model.
 
+If a new game is being added, create the appropriate conditional block to initialize the new game environment.
 
+If a new model is being added, instantiate the model, load its saved artifact from `storage/`, and add it to the execution and rendering loop.
+
+The relevant metrics, such as `final_avg_score` and maximum score, should also be extracted so that they can be displayed on the arena HUD.
+
+---
+
+## 7. How the Main Files Work Together
+
+The main files work together in the following order:
+
+1. **Game files in `games/`** define the environment, rules, state, rewards, and rendering.
+2. **Model files in `models/`** define how the AI observes the game state and chooses actions.
+3. **`train.py`** connects a game to a model and runs the training process.
+4. **`storage/`** receives the saved model artifacts and training metrics produced during training.
+5. **`arena_play.py`** loads the trained models and game environments, runs them, and displays their gameplay and performance.
+6. **`README.md`** documents the architecture, interfaces, project structure, and extension process.
+
+This separation makes it easier to add another game or AI model without changing unrelated parts of the project.
+
+---
+
+## 8. Development Workflow
+
+For the two implementations, each feature/documentation change should be developed on its own branch and merged into `main` before moving on to the next implementation.
+
+### Game Arena Implementation
+
+Create the feature branch:
+
+```bash
+git checkout -b "feat/game arena based on initial doc"
+```
+
+Implement and test the Game Arena changes, then merge the completed branch into `main`.
+
+### Documentation Implementation
+
+Create the documentation branch:
+
+```bash
+git checkout -b "doc/initial doc"
+```
+
+Complete the README documentation changes, then merge the branch into `main`.
+
+The expected workflow is therefore:
+
+```text
+main
+ │
+ ├── feat/game arena based on initial doc
+ │        │
+ │        └── merge → main
+ │
+ └── doc/initial doc
+          │
+          └── merge → main
+```
+
+The repository should finish with the completed work merged into a single `main` branch before moving to the next implementation.
+
+---
+
+## 9. Future Reference
+
+One possible future improvement is to render parts of the Markdown documentation directly inside Pygame. This could allow algorithms and game explanations to be displayed using the README content without requiring the reviewer to hard-code the text separately.
+
+Reference:
+
+https://share.google/aimode/ypUXJbx7uSTyp02rr
