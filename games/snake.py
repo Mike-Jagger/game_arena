@@ -162,5 +162,12 @@ class SnakeGame:
             pygame.draw.rect(surface, (0, 200, 80), pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
             pygame.draw.rect(surface, (0, 150, 60), pygame.Rect(pt.x+2, pt.y+2, BLOCK_SIZE-4, BLOCK_SIZE-4))
 
+            if pt == self.snake[0]:
+                print("Head:", pt.x, pt.y)
+
         # Draw Food
         pygame.draw.rect(surface, (230, 50, 50), pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
+        print("Food:", self.food.x, self.food.y)
+
+        if self.food.x == pt.x and self.food.y == pt.y:
+            print("Food eaten!")

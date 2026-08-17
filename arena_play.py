@@ -7,8 +7,10 @@ from models.q_learning import QLearningAgent
 from models.dqn import DQNAgent
 from models.neat_agent import NEATAgent
 
-VIEW_WIDTH = 300
-VIEW_HEIGHT = 300
+# Always make sure the width is an even number, because the snake moves in increments of 20 pixels (BLOCK_SIZE). 
+# An odd width can cause the snake to go out of bounds.
+VIEW_WIDTH = 400
+VIEW_HEIGHT = 400
 PANEL_HEIGHT = 150
 SCREEN_WIDTH = VIEW_WIDTH * 3 + 40
 SCREEN_HEIGHT = VIEW_HEIGHT + PANEL_HEIGHT
