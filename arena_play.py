@@ -110,7 +110,7 @@ def run_arena(game_type="snake"):
         
         pygame.display.flip()
 
-        print(states, steps, scores, dones)
+        # print(states, steps, scores, dones)
         
          # Terminate when all agents complete their session
         if all(dones):
