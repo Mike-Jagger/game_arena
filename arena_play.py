@@ -116,5 +116,5 @@ def run_arena(game_type="snake"):
         pygame.quit()
         sys.exit()
         
-        if __name__ == '__main__':
-            run_arena("snake")
+if __name__ == '__main__':
+    run_arena("snake")
