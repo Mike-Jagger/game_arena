@@ -107,14 +107,16 @@ def run_arena(game_type="snake"):
                 screen.blit(train_max, (x_pos + 10, VIEW_HEIGHT + 105))
         
         pygame.display.flip()
+
+        print(states, steps, scores, dones)
         
          # Terminate when all agents complete their session
         if all(dones):
                 pygame.time.delay(3000)
                 break
         
-        pygame.quit()
-        sys.exit()
+    pygame.quit()
+    sys.exit()
         
 if __name__ == '__main__':
     run_arena("snake")
