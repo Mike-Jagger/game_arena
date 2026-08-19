@@ -107,6 +107,9 @@ class FlappyBirdGame:
 
         if discrete:
             # Discretize into roughly 10x10x10x10 grid for Tabular Q-Learning
+            # Tabular Q-Learning requires a finite number of recurring states to build its Q-table.
+            # Since our distances and velocities are continuous floats, every frame would be a "new" state.
+            # We discretize by dividing by 20 (creating "bins") so similar positions are treated as the exact same state.
             return tuple([int(s // 20) for s in state])
             
         return np.array(state, dtype=np.float32)
