@@ -2,6 +2,7 @@ import argparse
 import os
 import json
 import neat
+import pickle
 from games.snake import SnakeGame
 from games.tictactoe import TicTacToeGame
 from models.q_learning import QLearningAgent
@@ -74,6 +75,31 @@ def train_snake_dqn(episodes=500):
     with open(os.path.join(STORAGE_DIR, "snake_dqn_metrics.json"), 'w') as f:
         json.dump(metrics, f)
     print("DQN Training complete.")
+
+def eval_genomes(genomes, config):
+    """
+    Evaluates the fitness of a population of genomes in the Snake environment.
+    Fitness is heavily weighted towards surviving longer and eating food.
+    """
+    for genome_id, genome in genomes:
+        genome.fitness = 0
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        env = SnakeGame()
+        state = env.reset()
+        done = False
+        
+        while not done:
+            # Get output from the neural network and pick the action with the highest value
+            output = net.activate(state)
+            action = np.argmax(output)
+            
+            next_state, reward, done, score = env.step(action)
+            
+            # Custom fitness calculation for the evolutionary algorithm
+            genome.fitness += reward
+            state = next_state
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
