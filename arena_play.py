@@ -44,6 +44,14 @@ def run_arena(game_type="snake"):
     agent_dqn.load("storage/snake_dqn.pt")
     m_dqn = load_metrics("snake", "dqn")
 
+    agent_neat = NEATAgent("config/neat_snake.cfg")
+    try:
+        agent_neat.load("storage/snake_neat.pkl")
+        m_neat = load_metrics("snake", "neat")
+    except FileNotFoundError:
+        print("NEAT model not found. Run 'python train.py --game snake --model neat' first.")
+        sys.exit(1)
+
     # Tracking states
     states = [env_ql.reset(), env_dqn.reset(), env_neat.reset()]
     dones = [False, False, False]
@@ -76,6 +84,12 @@ def run_arena(game_type="snake"):
             states[1], _, dones[1], scores[1] = env_dqn.step(action)
             steps[1] += 1
 
+        # step NEAT
+        if not dones[2]:
+            action = agent_neat.get_action(states[2])
+            states[2], _, dones[2], scores[2] = env_neat.step(action)
+            steps[2] += 1
+
         # Screen Drawing
         screen.fill((15, 15, 20))
         env_ql.render_to_surface(surfaces[0])
@@ -85,7 +99,7 @@ def run_arena(game_type="snake"):
         agents_data = [
             ("Q-Learning", surfaces[0], 10, m_ql, scores[0], steps[0], dones[0]),
             ("DQN", surfaces[1], VIEW_WIDTH + 20, m_dqn, scores[1], steps[1], dones[1]),
-            ("NEAT", surfaces[2], VIEW_WIDTH * 2 + 30, {}, scores[2], steps[2], dones[2])
+            ("NEAT", surfaces[2], VIEW_WIDTH * 2 + 30, m_neat, scores[2], steps[2], dones[2])
             ]
         
         for name, surf, x_pos, metrics, score, step, done in agents_data:
