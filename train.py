@@ -191,17 +191,20 @@ def train_flappy_dqn(episodes=1000):
 
 def eval_flappy_genomes(genomes, config):
     for genome_id, genome in genomes:
-        genome.fitness = 0
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         env = FlappyBirdGame()
         state = env.reset()
+        fitness = 0
         done = False
-        
-        while not done:
+        max_frames = 1500  # Cap maximum run time per genome
+
+        while not done and env.frames < max_frames:
             output = net.activate(state)
             action = np.argmax(output)
             state, reward, done, score = env.step(action)
-            genome.fitness += reward
+            fitness += reward
+
+        return fitness
 
 def train_flappy_neat(generations=500):
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, "config/neat_flappy.cfg")
