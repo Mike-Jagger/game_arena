@@ -96,7 +96,8 @@ def run_arena(game_type="snake"):
         # Step Q-Learning
         if not dones[0]:
             action = agent_ql.get_action(states[0], is_training=False)
-            states[0], _, dones[0], scores[0] = env_ql.step(action)
+            _, _, dones[0], scores[0] = env_ql.step(action)
+            states[0] = env_ql.get_state(discrete=True) if game_type == "flappybird" else env_ql.get_state()
             steps[0] += 1
 
         # Step DQN
