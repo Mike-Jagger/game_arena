@@ -135,7 +135,87 @@ def train_snake_neat(generations=500):
         
     print(f"NEAT Training complete. Best genome saved to {winner_path}.")
 
+def train_flappy_qlearning(episodes=2000):
+    env = FlappyBirdGame()
+    agent = QLearningAgent(action_size=2)
+    scores = []
+    
+    for ep in range(episodes):
+        env.reset()
+        state = env.get_state(discrete=True)
+        done = False
+        while not done:
+            action = agent.get_action(state, is_training=True)
+            _, reward, done, score = env.step(action)
+            next_state = env.get_state(discrete=True)
+            agent.update(state, action, reward, next_state, done)
+            state = next_state
+        scores.append(score)
+        if ep % 100 == 0:
+            print(f"Episode {ep}/{episodes} | Avg Score: {sum(scores[-100:])/max(1, len(scores[-100:])):.2f}")
 
+    agent.save(os.path.join(STORAGE_DIR, "flappybird_qlearning.pkl"))
+    metrics = {"final_avg_score": sum(scores[-100:]) / 100, "max_score": max(scores), "scores_history": scores}
+    with open(os.path.join(STORAGE_DIR, "flappybird_qlearning_metrics.json"), 'w') as f:
+        json.dump(metrics, f)
+    print("Flappy Q-Learning Training finished.")
+
+def train_flappy_dqn(episodes=1000):
+    env = FlappyBirdGame()
+    agent = DQNAgent(input_dim=4, output_dim=2)
+    scores, losses = [], []
+
+    for ep in range(episodes):
+        state = env.reset()
+        done = False
+        total_loss = 0
+        steps = 0
+        while not done:
+            action = agent.get_action(state, is_training=True)
+            next_state, reward, done, score = env.step(action)
+            agent.remember(state, action, reward, next_state, done)
+            loss = agent.train_step()
+            total_loss += loss
+            steps += 1
+            state = next_state
+        scores.append(score)
+        losses.append(total_loss / max(1, steps))
+        if ep % 50 == 0:
+            print(f"Episode {ep}/{episodes} | Avg Score: {sum(scores[-50:])/max(1, len(scores[-50:])):.2f}")
+
+    agent.save(os.path.join(STORAGE_DIR, "flappybird_dqn.pt"))
+    metrics = {"final_avg_score": sum(scores[-50:]) / 50, "max_score": max(scores), "scores_history": scores, "loss_history": losses}
+    with open(os.path.join(STORAGE_DIR, "flappybird_dqn_metrics.json"), 'w') as f:
+        json.dump(metrics, f)
+    print("Flappy DQN Training complete.")
+
+def eval_flappy_genomes(genomes, config):
+    for genome_id, genome in genomes:
+        genome.fitness = 0
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        env = FlappyBirdGame()
+        state = env.reset()
+        done = False
+        
+        while not done:
+            output = net.activate(state)
+            action = np.argmax(output)
+            state, reward, done, score = env.step(action)
+            genome.fitness += reward
+
+def train_flappy_neat(generations=50):
+    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, "config/neat_flappy.cfg")
+    p = neat.Population(config)
+    p.add_reporter(neat.StdOutReporter(True))
+    winner = p.run(eval_flappy_genomes, generations)
+    
+    with open(os.path.join(STORAGE_DIR, "flappybird_neat.pkl"), "wb") as f:
+        pickle.dump(winner, f)
+        
+    metrics = {"final_avg_score": getattr(winner, 'fitness', 0), "max_score": getattr(winner, 'fitness', 0)}
+    with open(os.path.join(STORAGE_DIR, "flappybird_neat_metrics.json"), "w") as f:
+        json.dump(metrics, f)
+    print("Flappy NEAT Training complete.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
