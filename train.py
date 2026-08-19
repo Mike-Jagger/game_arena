@@ -123,6 +123,7 @@ def train_snake_neat(generations=500):
         pickle.dump(winner, f)
         
     # Persist metrics for visualizations
+    # print("Winner details:", winner)
     metrics = {
         "episodes": generations,
         "final_avg_score": getattr(winner, 'fitness', 0), 
