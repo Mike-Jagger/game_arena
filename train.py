@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.all == 'none' and (not args.game or not args.model):
+    if 'none' in args.all and (not args.game or not args.model):
         print("Error: Please specify a game using --game and a model using --model, or use --all to train all games.")
         exit(1)
 
@@ -270,7 +270,7 @@ if __name__ == '__main__':
             train_flappy_dqn_with_episodes(args.episodes)
             train_flappy_neat_with_episodes(args.episodes)
 
-    if args.all == 'none':
+    if 'none' in args.all:
         if args.game == 'snake' or args.all in ['games', 'snake']:
             if args.model == 'qlearning':
                 train_snake_qlearning_with_episodes(args.episodes)
