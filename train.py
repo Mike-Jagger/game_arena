@@ -136,7 +136,7 @@ def train_snake_neat(generations=500):
         
     print(f"NEAT Training complete. Best genome saved to {winner_path}.")
 
-def train_flappy_qlearning(episodes=2000):
+def train_flappy_qlearning(episodes=2000000):
     env = FlappyBirdGame()
     agent = QLearningAgent(action_size=2)
     scores = []
