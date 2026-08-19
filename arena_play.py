@@ -30,35 +30,47 @@ def run_arena(game_type="snake"):
     font = pygame.font.SysFont("monospace", 14)
     header_font = pygame.font.SysFont("monospace", 16, bold=True)
 
-    # Instantiate separate game environments
-    env_ql = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
-    env_dqn = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
-    env_neat = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
-    
-    # Load agents
-    agent_ql = QLearningAgent(action_size=3)
 
-    try:
-        agent_ql.load("storage/snake_qlearning.pkl")
-        m_ql = load_metrics("snake", "qlearning")
-    except FileNotFoundError:
-        print("Q-Learning model not found. Run 'python train.py --game snake --model qlearning' first.")
-        sys.exit(1)
+    if game_type == "flappybird":
+        from games.flappy_bird import FlappyBirdGame
+        env_ql = FlappyBirdGame(VIEW_WIDTH, VIEW_HEIGHT)
+        env_dqn = FlappyBirdGame(VIEW_WIDTH, VIEW_HEIGHT)
+        env_neat = FlappyBirdGame(VIEW_WIDTH, VIEW_HEIGHT)
+        
+        agent_ql = QLearningAgent(action_size=2)
+        agent_dqn = DQNAgent(input_dim=4, output_dim=2)
+        agent_neat = NEATAgent("config/neat_flappy.cfg")
+        
+        # Initial States for Flappy Bird
+        states = [env_ql.get_state(discrete=True), env_dqn.reset(), env_neat.reset()]
+    else:
+        # Default to Snake logic ...
+        env_ql = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
+        env_dqn = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
+        env_neat = SnakeGame(VIEW_WIDTH, VIEW_HEIGHT)
+        
+        agent_ql = QLearningAgent(action_size=3)
+        agent_dqn = DQNAgent(input_dim=11, output_dim=3)
+        agent_neat = NEATAgent("config/neat_snake.cfg")
+        states = [env_ql.reset(), env_dqn.reset(), env_neat.reset()]
 
-    agent_dqn = DQNAgent(input_dim=11, output_dim=3)
+    # Load agents dynamically
     try:
-        agent_dqn.load("storage/snake_dqn.pt")
-        m_dqn = load_metrics("snake", "dqn")
-    except FileNotFoundError:
-        print("DQN model not found. Run 'python train.py --game snake --model dqn' first.")
-        sys.exit(1)
-
-    agent_neat = NEATAgent("config/neat_snake.cfg")
-    try:
-        agent_neat.load("storage/snake_neat.pkl")
-        m_neat = load_metrics("snake", "neat")
-    except FileNotFoundError:
-        print("NEAT model not found. Run 'python train.py --game snake --model neat' first.")
+        agent_ql.load(f"storage/{game_type}_qlearning.pkl")
+        m_ql = load_metrics(game_type, "qlearning")
+        
+        agent_dqn.load(f"storage/{game_type}_dqn.pt")
+        m_dqn = load_metrics(game_type, "dqn")
+        
+        agent_neat.load(f"storage/{game_type}_neat.pkl")
+        m_neat = load_metrics(game_type, "neat")
+    except FileNotFoundError as e:
+        print(f"""Error loading models for {game_type}. Have you trained all 3 models yet?
+                if not, run 
+                \t`python train.py --game {game_type} --model qlearning`, 
+                \t`python train.py --game {game_type} --model dqn`, and 
+                \t`python train.py --game {game_type} --model neat` 
+                \nError: {e}""")
         sys.exit(1)
 
     # Tracking states
