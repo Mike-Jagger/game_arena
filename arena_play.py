@@ -1,3 +1,5 @@
+import argparse
+
 import pygame
 import os
 import json
@@ -157,4 +159,12 @@ def run_arena(game_type="snake"):
     sys.exit()
         
 if __name__ == '__main__':
-    run_arena("snake")
+    parser = argparse.ArgumentParser(description="Run ML Algorithms on Snake or TicTacToe")
+    parser.add_argument('--game', choices=['snake', 'flappybird'], default='snake')
+
+    args = parser.parse_args()
+
+    if args.game == 'snake':
+        run_arena(game_type="snake")
+    elif args.game == 'flappybird':
+        run_arena(game_type="flappybird")
