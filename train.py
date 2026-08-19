@@ -100,7 +100,7 @@ def eval_genomes(genomes, config):
             genome.fitness += reward
             state = next_state
 
-def train_snake_neat(generations=50):
+def train_snake_neat(generations=500):
     config_path = "config/neat_snake.cfg"
     config = neat.Config(
         neat.DefaultGenome, neat.DefaultReproduction,
