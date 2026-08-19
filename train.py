@@ -222,16 +222,17 @@ if __name__ == '__main__':
     parser.add_argument('--game', choices=['snake', 'flappybird'], required=True)
     parser.add_argument('--model', choices=['qlearning', 'dqn', 'neat'], required=True)
     parser.add_argument('--episodes', type=int, default=0)
+    parser.add_argument('--all', choices=['games', 'snake', 'flappybird'], default=['games'])
     args = parser.parse_args()
 
-    if args.game == 'snake':
+    if args.game == 'snake' or args.all in ['games', 'snake']:
         if args.model == 'qlearning':
             train_snake_qlearning(args.episodes) if args.episodes > 0 else train_snake_qlearning()
         elif args.model == 'dqn':
             train_snake_dqn(args.episodes) if args.episodes > 0 else train_snake_dqn()
         elif args.model == 'neat':
             train_snake_neat(args.episodes) if args.episodes > 0 else train_snake_neat()
-    elif args.game == 'flappybird':
+    elif args.game == 'flappybird' or args.all in ['games', 'flappybird']:
         if args.model == 'qlearning':
             train_flappy_qlearning(args.episodes) if args.episodes > 0 else train_flappy_qlearning()
         elif args.model == 'dqn':
