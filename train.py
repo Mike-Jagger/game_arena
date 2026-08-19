@@ -232,6 +232,21 @@ def train_flappy_neat(generations=500):
         
     print(f"Flappy NEAT Training complete on {num_workers} CPU cores.")
 
+def train_snake_qlearning_with_episodes(episodes):
+    train_snake_qlearning(episodes) if episodes > 0 else train_snake_qlearning()
+def train_snake_dqn_with_episodes(episodes):
+    train_snake_dqn(episodes) if episodes > 0 else train_snake_dqn()
+def train_snake_neat_with_episodes(episodes):
+    train_snake_neat(episodes) if episodes > 0 else train_snake_neat()
+
+def train_flappy_qlearning_with_episodes(episodes):
+    train_flappy_qlearning(episodes) if episodes > 0 else train_flappy_qlearning()
+def train_flappy_dqn_with_episodes(episodes):
+    train_flappy_dqn(episodes) if episodes > 0 else train_flappy_dqn()
+def train_flappy_neat_with_episodes(episodes):
+    train_flappy_neat(episodes) if episodes > 0 else train_flappy_neat()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
     parser.add_argument('--all', choices=['games', 'snake', 'flappybird'], default=['none'])
@@ -246,27 +261,27 @@ if __name__ == '__main__':
         exit(1)
 
     if args.all == 'games' or args.all == 'snake':
-            train_snake_qlearning(args.episodes) if args.episodes > 0 else train_snake_qlearning()
-            train_snake_dqn(args.episodes) if args.episodes > 0 else train_snake_dqn()
-            train_snake_neat(args.episodes) if args.episodes > 0 else train_snake_neat()
+            train_snake_qlearning_with_episodes(args.episodes)
+            train_snake_dqn_with_episodes(args.episodes)
+            train_snake_neat_with_episodes(args.episodes)
 
     if args.all == 'games' or args.all == 'flappybird':
-            train_flappy_qlearning(args.episodes) if args.episodes > 0 else train_flappy_qlearning()
-            train_flappy_dqn(args.episodes) if args.episodes > 0 else train_flappy_dqn()
-            train_flappy_neat(args.episodes) if args.episodes > 0 else train_flappy_neat()
+            train_flappy_qlearning_with_episodes(args.episodes)
+            train_flappy_dqn_with_episodes(args.episodes)
+            train_flappy_neat_with_episodes(args.episodes)
 
     if args.all == 'none':
         if args.game == 'snake' or args.all in ['games', 'snake']:
             if args.model == 'qlearning':
-                train_snake_qlearning(args.episodes) if args.episodes > 0 else train_snake_qlearning()
+                train_snake_qlearning_with_episodes(args.episodes)
             elif args.model == 'dqn':
-                train_snake_dqn(args.episodes) if args.episodes > 0 else train_snake_dqn()
+                train_snake_dqn_with_episodes(args.episodes)
             elif args.model == 'neat':
-                train_snake_neat(args.episodes) if args.episodes > 0 else train_snake_neat()
+                train_snake_neat_with_episodes(args.episodes)
         elif args.game == 'flappybird' or args.all in ['games', 'flappybird']:
             if args.model == 'qlearning':
-                train_flappy_qlearning(args.episodes) if args.episodes > 0 else train_flappy_qlearning()
+                train_flappy_qlearning_with_episodes(args.episodes)
             elif args.model == 'dqn':
-                train_flappy_dqn(args.episodes) if args.episodes > 0 else train_flappy_dqn()
+                train_flappy_dqn_with_episodes(args.episodes)
             elif args.model == 'neat':
-                train_flappy_neat(args.episodes) if args.episodes > 0 else train_flappy_neat()
+                train_flappy_neat_with_episodes(args.episodes)
