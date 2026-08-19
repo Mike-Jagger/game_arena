@@ -203,7 +203,7 @@ def eval_flappy_genomes(genomes, config):
             state, reward, done, score = env.step(action)
             genome.fitness += reward
 
-def train_flappy_neat(generations=50):
+def train_flappy_neat(generations=500):
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, "config/neat_flappy.cfg")
     p = neat.Population(config)
     p.add_reporter(neat.StdOutReporter(True))
