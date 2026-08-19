@@ -245,17 +245,28 @@ if __name__ == '__main__':
         print("Error: Please specify a game using --game and a model using --model, or use --all to train all games.")
         exit(1)
 
-    if args.game == 'snake' or args.all in ['games', 'snake']:
-        if args.model == 'qlearning':
+    if args.all == 'games' or args.all == 'snake':
             train_snake_qlearning(args.episodes) if args.episodes > 0 else train_snake_qlearning()
-        elif args.model == 'dqn':
             train_snake_dqn(args.episodes) if args.episodes > 0 else train_snake_dqn()
-        elif args.model == 'neat':
             train_snake_neat(args.episodes) if args.episodes > 0 else train_snake_neat()
-    elif args.game == 'flappybird' or args.all in ['games', 'flappybird']:
-        if args.model == 'qlearning':
+
+    if args.all == 'games' or args.all == 'flappybird':
             train_flappy_qlearning(args.episodes) if args.episodes > 0 else train_flappy_qlearning()
-        elif args.model == 'dqn':
             train_flappy_dqn(args.episodes) if args.episodes > 0 else train_flappy_dqn()
-        elif args.model == 'neat':
             train_flappy_neat(args.episodes) if args.episodes > 0 else train_flappy_neat()
+
+    if args.all == 'none':
+        if args.game == 'snake' or args.all in ['games', 'snake']:
+            if args.model == 'qlearning':
+                train_snake_qlearning(args.episodes) if args.episodes > 0 else train_snake_qlearning()
+            elif args.model == 'dqn':
+                train_snake_dqn(args.episodes) if args.episodes > 0 else train_snake_dqn()
+            elif args.model == 'neat':
+                train_snake_neat(args.episodes) if args.episodes > 0 else train_snake_neat()
+        elif args.game == 'flappybird' or args.all in ['games', 'flappybird']:
+            if args.model == 'qlearning':
+                train_flappy_qlearning(args.episodes) if args.episodes > 0 else train_flappy_qlearning()
+            elif args.model == 'dqn':
+                train_flappy_dqn(args.episodes) if args.episodes > 0 else train_flappy_dqn()
+            elif args.model == 'neat':
+                train_flappy_neat(args.episodes) if args.episodes > 0 else train_flappy_neat()
