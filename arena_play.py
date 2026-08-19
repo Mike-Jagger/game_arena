@@ -37,12 +37,21 @@ def run_arena(game_type="snake"):
     
     # Load agents
     agent_ql = QLearningAgent(action_size=3)
-    agent_ql.load("storage/snake_qlearning.pkl")
-    m_ql = load_metrics("snake", "qlearning")
+
+    try:
+        agent_ql.load("storage/snake_qlearning.pkl")
+        m_ql = load_metrics("snake", "qlearning")
+    except FileNotFoundError:
+        print("Q-Learning model not found. Run 'python train.py --game snake --model qlearning' first.")
+        sys.exit(1)
 
     agent_dqn = DQNAgent(input_dim=11, output_dim=3)
-    agent_dqn.load("storage/snake_dqn.pt")
-    m_dqn = load_metrics("snake", "dqn")
+    try:
+        agent_dqn.load("storage/snake_dqn.pt")
+        m_dqn = load_metrics("snake", "dqn")
+    except FileNotFoundError:
+        print("DQN model not found. Run 'python train.py --game snake --model dqn' first.")
+        sys.exit(1)
 
     agent_neat = NEATAgent("config/neat_snake.cfg")
     try:
