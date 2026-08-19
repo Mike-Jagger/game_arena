@@ -145,3 +145,5 @@ if __name__ == '__main__':
             train_snake_qlearning(args.episodes)
         elif args.model == 'dqn':
             train_snake_dqn(args.episodes)
+        elif args.model == 'neat':
+            train_snake_neat(args.episodes)
