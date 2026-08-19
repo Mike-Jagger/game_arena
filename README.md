@@ -39,6 +39,97 @@ The main flow is:
 
 ---
 
+## Installation & Setup
+
+### 1. Clone the Repository & Set Up an Environment
+
+```bash
+git clone https://https.github.com/Mike-Jagger/game_arena.git
+cd game_arena
+
+# Create and activate a virtual environment
+# Windows (PowerShell)
+python -m venv ai_env
+.\ai_env\Scripts\Activate.ps1
+
+# macOS / Linux
+python3 -m venv ai_env
+source ai_env/bin/activate
+```
+
+### 2. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+## How to Run
+
+The workflow consists of two main stages: training the models and running the arena for real-time comparative visualization.
+
+### Stage 1: Training Models (`train.py`)
+
+You can train individual algorithms or run batch training across games.
+
+#### Option A: Train a Single Model on a Specific Game
+
+Use `--game`, `--model`, and specify the number of `--episodes` (or generations for NEAT):
+
+```bash
+# Train Q-Learning on Snake for 1000 episodes
+python train.py --game snake --model qlearning --episodes 1000
+
+# Train DQN on Snake for 500 episodes
+python train.py --game snake --model dqn --episodes 500
+
+# Train NEAT on Snake for 50 generations
+python train.py --game snake --model neat --episodes 50
+
+# Train DQN on Flappy Bird for 1000 episodes
+python train.py --game flappybird --model dqn --episodes 1000
+```
+
+#### Option B: Train All Models in Batch Mode
+
+Use the `--all` flag to train all 3 models (`qlearning`, `dqn`, `neat`) sequentially:
+
+```bash
+# Train all 3 models on Snake
+python train.py --all snake --episodes 500
+
+# Train all 3 models on Flappy Bird
+python train.py --all flappybird --episodes 500
+
+# Train all models across both games
+python train.py --all games --episodes 500
+```
+
+> **Note:** Retraining a model will automatically overwrite its previous weights (`.pt` / `.pkl`) and telemetry metrics (`.json`) in the `storage/` directory.
+
+### Stage 2: Multi-Agent Benchmark Arena (`arena_play.py`)
+
+Once the models for a game are trained, run the simultaneous Pygame arena to view them playing side-by-side with live telemetry and historical training metrics:
+
+```bash
+# Run Snake Arena (Default)
+python arena_play.py --game snake
+
+# Run Flappy Bird Arena
+python arena_play.py --game flappybird
+```
+
+### Stage 3: Generate Evaluation Visualizations (`visualizations.py`)
+
+To generate publication-ready comparative charts (learning curves, training loss, and performance bar charts) from your stored metrics:
+
+```bash
+python visualizations.py
+```
+
+Generated plots will be saved to the `visualizations/` folder.
+
+---
+
 ## 1. Architecture Overview
 
 The Game Arena is built on a modular, decoupled architecture. The main idea is to keep the game logic separate from the machine learning algorithms. This makes it possible to use different models with different games without having to rewrite the entire system.
@@ -61,13 +152,13 @@ To allow the execution scripts to work with different games in the same way, eve
 
 ### Required Game Methods
 
-| Method Signature | Description | Return Value |
-| :--- | :--- | :--- |
-| `__init__(self, width, height)` | Initializes the game configuration and visual bounds. | `None` |
-| `reset(self)` | Resets the game to its initial state. | `state` (Tuple or NumPy Array) |
-| `step(self, action)` | Advances the game by one frame or turn based on the agent's action. | `(next_state, reward, done, score_or_info)` |
-| `get_state(self)` | Calculates and returns the current state representation. | `state` (Tuple or NumPy Array) |
-| `render_to_surface(self, surface)` | Draws the current game frame onto the provided Pygame surface. | `None` |
+| Method Signature                   | Description                                                         | Return Value                                |
+| :--------------------------------- | :------------------------------------------------------------------ | :------------------------------------------ |
+| `__init__(self, width, height)`    | Initializes the game configuration and visual bounds.               | `None`                                      |
+| `reset(self)`                      | Resets the game to its initial state.                               | `state` (Tuple or NumPy Array)              |
+| `step(self, action)`               | Advances the game by one frame or turn based on the agent's action. | `(next_state, reward, done, score_or_info)` |
+| `get_state(self)`                  | Calculates and returns the current state representation.            | `state` (Tuple or NumPy Array)              |
+| `render_to_surface(self, surface)` | Draws the current game frame onto the provided Pygame surface.      | `None`                                      |
 
 ### Base Template: `games/base_game.py`
 
@@ -112,12 +203,12 @@ This allows the execution scripts to train the agents and request actions withou
 
 ### Required Agent Methods
 
-| Method Signature | Description |
-| :--- | :--- |
-| `__init__(self, ...)` | Initializes the model's hyperparameters, architecture, and memory where required. |
+| Method Signature                       | Description                                                                                       |
+| :------------------------------------- | :------------------------------------------------------------------------------------------------ |
+| `__init__(self, ...)`                  | Initializes the model's hyperparameters, architecture, and memory where required.                 |
 | `get_action(self, state, is_training)` | Returns an action. When `is_training=True`, the agent can use exploration such as epsilon-greedy. |
-| `save(self, filepath)` | Saves the model weights or Q-table to the specified location. |
-| `load(self, filepath)` | Loads previously saved model weights or Q-table data. |
+| `save(self, filepath)`                 | Saves the model weights or Q-table to the specified location.                                     |
+| `load(self, filepath)`                 | Loads previously saved model weights or Q-table data.                                             |
 
 Training methods such as `update`, `remember`, or `train_step` can be different for each model because different algorithms learn in different ways.
 
