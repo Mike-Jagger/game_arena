@@ -6,6 +6,7 @@ import pickle
 import numpy as np
 from games.snake import SnakeGame
 from games.tictactoe import TicTacToeGame
+from games.flappy_bird import FlappyBirdGame
 from models.q_learning import QLearningAgent
 from models.dqn import DQNAgent
 from models.neat_agent import NEATAgent
@@ -133,6 +134,8 @@ def train_snake_neat(generations=500):
         json.dump(metrics, f)
         
     print(f"NEAT Training complete. Best genome saved to {winner_path}.")
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
