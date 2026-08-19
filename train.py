@@ -219,7 +219,7 @@ def train_flappy_neat(generations=50):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
-    parser.add_argument('--game', choices=['snake', 'tictactoe'], required=True)
+    parser.add_argument('--game', choices=['snake', 'flappybird'], required=True)
     parser.add_argument('--model', choices=['qlearning', 'dqn', 'neat'], required=True)
     parser.add_argument('--episodes', type=int, default=500)
     args = parser.parse_args()
@@ -231,3 +231,10 @@ if __name__ == '__main__':
             train_snake_dqn(args.episodes)
         elif args.model == 'neat':
             train_snake_neat(args.episodes)
+    elif args.game == 'flappybird':
+        if args.model == 'qlearning':
+            train_flappy_qlearning(args.episodes)
+        elif args.model == 'dqn':
+            train_flappy_dqn(args.episodes)
+        elif args.model == 'neat':
+            train_flappy_neat(args.episodes)
