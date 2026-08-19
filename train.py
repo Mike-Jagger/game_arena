@@ -3,6 +3,7 @@ import os
 import json
 import neat
 import pickle
+import numpy as np
 from games.snake import SnakeGame
 from games.tictactoe import TicTacToeGame
 from models.q_learning import QLearningAgent
