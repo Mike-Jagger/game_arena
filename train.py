@@ -99,7 +99,38 @@ def eval_genomes(genomes, config):
             genome.fitness += reward
             state = next_state
 
-
+def train_snake_neat(generations=50):
+    config_path = "config/neat_snake.cfg"
+    config = neat.Config(
+        neat.DefaultGenome, neat.DefaultReproduction,
+        neat.DefaultSpeciesSet, neat.DefaultStagnation,
+        config_path
+    )
+    
+    # Initialize Population
+    p = neat.Population(config)
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+    
+    # Run Evolution
+    winner = p.run(eval_genomes, generations)
+    
+    # Persist the winning genome
+    winner_path = os.path.join(STORAGE_DIR, "snake_neat.pkl")
+    with open(winner_path, "wb") as f:
+        pickle.dump(winner, f)
+        
+    # Persist metrics for visualizations
+    metrics = {
+        "episodes": generations,
+        "final_avg_score": getattr(winner, 'fitness', 0), 
+        "max_score": getattr(winner, 'fitness', 0)
+    }
+    with open(os.path.join(STORAGE_DIR, "snake_neat_metrics.json"), "w") as f:
+        json.dump(metrics, f)
+        
+    print(f"NEAT Training complete. Best genome saved to {winner_path}.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
