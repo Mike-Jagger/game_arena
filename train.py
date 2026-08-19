@@ -1,4 +1,5 @@
 import argparse
+import multiprocessing
 import os
 import json
 import neat
@@ -207,18 +208,30 @@ def eval_flappy_genomes(genomes, config):
         return fitness
 
 def train_flappy_neat(generations=500):
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, "config/neat_flappy.cfg")
+    config = neat.Config(
+        neat.DefaultGenome, neat.DefaultReproduction,
+        neat.DefaultSpeciesSet, neat.DefaultStagnation,
+        "config/neat_flappy.cfg"
+    )
     p = neat.Population(config)
     p.add_reporter(neat.StdOutReporter(True))
-    winner = p.run(eval_flappy_genomes, generations)
+    
+    # Run evaluation across all available CPU cores
+    num_workers = multiprocessing.cpu_count()
+    pe = neat.ParallelEvaluator(num_workers, eval_flappy_genomes)
+    winner = p.run(pe.evaluate, generations)
     
     with open(os.path.join(STORAGE_DIR, "flappybird_neat.pkl"), "wb") as f:
         pickle.dump(winner, f)
         
-    metrics = {"final_avg_score": getattr(winner, 'fitness', 0), "max_score": getattr(winner, 'fitness', 0)}
+    metrics = {
+        "final_avg_score": getattr(winner, 'fitness', 0),
+        "max_score": getattr(winner, 'fitness', 0)
+    }
     with open(os.path.join(STORAGE_DIR, "flappybird_neat_metrics.json"), "w") as f:
         json.dump(metrics, f)
-    print("Flappy NEAT Training complete.")
+        
+    print(f"Flappy NEAT Training complete on {num_workers} CPU cores.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
