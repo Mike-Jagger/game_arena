@@ -190,22 +190,21 @@ def train_flappy_dqn(episodes=1000):
         json.dump(metrics, f)
     print("Flappy DQN Training complete.")
 
-def eval_flappy_genomes(genomes, config):
-    for genome_id, genome in genomes:
-        net = neat.nn.FeedForwardNetwork.create(genome, config)
-        env = FlappyBirdGame()
-        state = env.reset()
-        fitness = 0
-        done = False
-        max_frames = 1500  # Cap maximum run time per genome
+def eval_flappy_genome(genome, config):
+    net = neat.nn.FeedForwardNetwork.create(genome, config)
+    env = FlappyBirdGame()
+    state = env.reset()
+    fitness = 0
+    done = False
+    max_frames = 1500  # Cap maximum run time per genome
 
-        while not done and env.frames < max_frames:
-            output = net.activate(state)
-            action = np.argmax(output)
-            state, reward, done, score = env.step(action)
-            fitness += reward
+    while not done and env.frames < max_frames:
+        output = net.activate(state)
+        action = np.argmax(output)
+        state, reward, done, score = env.step(action)
+        fitness += reward
 
-        return fitness
+    return fitness
 
 def train_flappy_neat(generations=500):
     config = neat.Config(
@@ -218,7 +217,7 @@ def train_flappy_neat(generations=500):
     
     # Run evaluation across all available CPU cores
     num_workers = multiprocessing.cpu_count()
-    pe = neat.ParallelEvaluator(num_workers, eval_flappy_genomes)
+    pe = neat.ParallelEvaluator(num_workers, eval_flappy_genome)
     winner = p.run(pe.evaluate, generations)
     
     with open(os.path.join(STORAGE_DIR, "flappybird_neat.pkl"), "wb") as f:
