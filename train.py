@@ -234,11 +234,16 @@ def train_flappy_neat(generations=500):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
-    parser.add_argument('--game', choices=['snake', 'flappybird'], required=True)
-    parser.add_argument('--model', choices=['qlearning', 'dqn', 'neat'], required=True)
+    parser.add_argument('--all', choices=['games', 'snake', 'flappybird'], default=['none'])
+    parser.add_argument('--game', choices=['snake', 'flappybird'])
+    parser.add_argument('--model', choices=['qlearning', 'dqn', 'neat'])
     parser.add_argument('--episodes', type=int, default=0)
-    parser.add_argument('--all', choices=['games', 'snake', 'flappybird'], default=['games'])
+
     args = parser.parse_args()
+
+    if args.all == 'none' and (not args.game or not args.model):
+        print("Error: Please specify a game using --game and a model using --model, or use --all to train all games.")
+        exit(1)
 
     if args.game == 'snake' or args.all in ['games', 'snake']:
         if args.model == 'qlearning':
