@@ -221,20 +221,20 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train ML algorithms on Snake or TicTacToe")
     parser.add_argument('--game', choices=['snake', 'flappybird'], required=True)
     parser.add_argument('--model', choices=['qlearning', 'dqn', 'neat'], required=True)
-    parser.add_argument('--episodes', type=int, default=500)
+    parser.add_argument('--episodes', type=int, default=0)
     args = parser.parse_args()
 
     if args.game == 'snake':
         if args.model == 'qlearning':
-            train_snake_qlearning(args.episodes)
+            train_snake_qlearning(args.episodes) if args.episodes > 0 else train_snake_qlearning()
         elif args.model == 'dqn':
-            train_snake_dqn(args.episodes)
+            train_snake_dqn(args.episodes) if args.episodes > 0 else train_snake_dqn()
         elif args.model == 'neat':
-            train_snake_neat(args.episodes)
+            train_snake_neat(args.episodes) if args.episodes > 0 else train_snake_neat()
     elif args.game == 'flappybird':
         if args.model == 'qlearning':
-            train_flappy_qlearning(args.episodes)
+            train_flappy_qlearning(args.episodes) if args.episodes > 0 else train_flappy_qlearning()
         elif args.model == 'dqn':
-            train_flappy_dqn(args.episodes)
+            train_flappy_dqn(args.episodes) if args.episodes > 0 else train_flappy_dqn()
         elif args.model == 'neat':
-            train_flappy_neat(args.episodes)
+            train_flappy_neat(args.episodes) if args.episodes > 0 else train_flappy_neat()
