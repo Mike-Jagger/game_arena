@@ -137,7 +137,7 @@ def run_arena(game_type="snake"):
         
          # Terminate when all agents complete their session
         if all(dones):
-                pygame.time.delay(3000)
+                pygame.time.delay(20000)
                 break
         
     pygame.quit()
